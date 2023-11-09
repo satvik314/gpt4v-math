@@ -1,40 +1,40 @@
-"use client"
+"use client";
 
-import { ChangeEvent, useState, FormEvent } from "react"
+import { ChangeEvent, useState, FormEvent } from "react";
+import toast from "react-hot-toast";
+import Latex from "react-latex-next";
 
 export default function Home() {
-  const [image, setImage]  = useState<string>("");
+  const [image, setImage] = useState<string>("");
   const [openAIResponse, setOpenAIResponse] = useState<string>("");
 
-
-  function handleFileChange(event: ChangeEvent<HTMLInputElement>){
-    if (event.target.files === null){
-      window.alert("No file selected. Choose a file.")
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+    if (event.target.files === null) {
+      window.alert("No file selected. Choose a file.");
       return;
     }
-    const file = event.target.files[0]
+    const file = event.target.files[0];
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
 
     reader.onload = () => {
-      if (typeof reader.result === 'string') {
+      if (typeof reader.result === "string") {
         console.log(reader.result);
         setImage(reader.result);
       }
-    }
+    };
 
     reader.onerror = (error) => {
       console.log("error: " + error);
-    }
-
+    };
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if(image === "") {
-      alert("Upload an image.")
+    if (image === "") {
+      toast.error("Upload an image.");
       return;
     }
 
@@ -42,13 +42,12 @@ export default function Home() {
     await fetch("api/analyzeImage", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        image: image // base64 image
-      })
-    })
-    .then(async (response: any) => {
+        image: image, // base64 image
+      }),
+    }).then(async (response: any) => {
       // Because we are getting a streaming text response
       // we have to make some logic to handle the streaming text
       const reader = response.body?.getReader();
@@ -58,7 +57,7 @@ export default function Home() {
       while (true) {
         const { done, value } = await reader?.read();
         // done is true once the response is done
-        if(done) {
+        if (done) {
           break;
         }
 
@@ -67,59 +66,91 @@ export default function Home() {
         setOpenAIResponse((prev) => prev + currentChunk);
       }
     });
-
   }
-
   return (
-    <div className="min-h-screen flex items-center justify-center text-md">
-      <div className='bg-slate-800 w-full max-w-2xl rounded-lg shadow-md p-8'>
-        <h2 className='text-xl font-bold mb-4'>Upload your Home Work</h2>
-        { image !== "" ?
-          <div className="mb-4 overflow-hidden">
-            <img 
-              src={image}
-              className="w-full object-contain max-h-72"
-            />
-          </div>
-        :
-        <div className="mb-4 p-8 text-center">
-          <p>Once you upload an image, you will see it here.</p>
+    <div className='min-h-screen text-md'>
+      <div className='w-full py-3 bg-indigo-500'>
+        <h2 className='text-xl text-white font-semibold text-center'>
+          Upload your Home Work
+        </h2>
+      </div>
+      <div className='max-w-7xl py-12 mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10'>
+        <div className='lg:col-span-1'>
+          {image !== "" ? (
+            <div className='mb-4 overflow-hidden'>
+              <img
+                src={image}
+                alt='Uploaded Question'
+                className='w-full object-contain max-h-72'
+              />
+            </div>
+          ) : (
+            <div className='animate-pulse md:flex md:items-center my-6'>
+              <div className='flex items-center justify-center w-full h-72 bg-gray-300 rounded'>
+                <svg
+                  className='w-10 h-10 text-gray-200'
+                  aria-hidden='true'
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='currentColor'
+                  viewBox='0 0 20 18'
+                >
+                  <path d='M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z' />
+                </svg>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={(e) => handleSubmit(e)}>
+            <div className='w-full'>
+              <label className='flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none'>
+                <span className='flex items-center space-x-2'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    className='w-6 h-6 text-gray-600'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                    stroke-width='2'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12'
+                    />
+                  </svg>
+                  <span className='font-medium text-gray-600'>
+                    Drop files to Attach, or{" "}
+                    <span className='text-blue-600 underline'>browse</span>
+                  </span>
+                </span>
+                <input
+                  type='file'
+                  name='file_upload'
+                  className='hidden'
+                  onChange={(e) => handleFileChange(e)}
+                />
+              </label>
+            </div>
+
+            <div className='flex justify-center'>
+              <button
+                type='submit'
+                className='w-full p-2 bg-indigo-500 hover:bg-indigo-700 text-white rounded-md my-4 text-center'
+              >
+                Check my solution
+              </button>
+            </div>
+          </form>
         </div>
-        }
-        
-
-        <form onSubmit={(e) => handleSubmit(e)}>
-          <div className='flex flex-col mb-6'>
-            <label className='mb-2 text-sm font-medium'>Upload Image</label>
-            <input
-              type="file"
-              className="text-sm border rounded-lg cursor-pointer"
-              onChange={(e) => handleFileChange(e)}
-            />
-          </div>
-          
-          <div className='flex justify-center'>
-            <button type="submit" className='p-2 bg-sky-600 rounded-md mb-4'>
-              Check my solution
-            </button>
-          </div> 
-
-        </form>
-
-        {openAIResponse !== "" ?
-        <div className="border-t border-gray-300 pt-4">
-          <h2 className="text-xl font-bold mb-2">AI Response</h2>
-          <p>{openAIResponse}</p>
+        <div className='lg:col-span-2'>
+          {openAIResponse !== "" ? (
+            <div className=''>
+              <h2 className='text-xl font-bold mb-4'>AI Response</h2>
+              <Latex>{openAIResponse}</Latex>
+            </div>
+          ) : null}
         </div>
-        :
-        null
-        }
-        
-
       </div>
     </div>
-  )
-
-
-
+  );
 }
