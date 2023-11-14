@@ -1,3 +1,5 @@
+Connect on LinkedIn - [Satvik](https://www.linkedin.com/in/satvik-paramkusham/)
+
 ➗ Introducing “AI Math Teacher”
 
 Powered by GPT-4 Vison API. Created using Next JS 14.
