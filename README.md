@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+➗ Introducing “AI Math Teacher”
+
+Powered by GPT-4 Vison API. Created using Next JS 14.
 
 ## Getting Started
 
