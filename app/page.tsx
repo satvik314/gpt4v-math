@@ -61,7 +61,7 @@ export default function Home() {
     <div className='min-h-screen text-md'>
       <div className='w-full py-3 bg-indigo-500'>
         <h2 className='text-xl text-white font-semibold text-center'>
-          GPT4-V Math Teacher
+          AI Math Teacher
         </h2>
         <h3 className='text-xl text-white text-center'>
           Upload your Home Work
