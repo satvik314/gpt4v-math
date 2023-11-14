@@ -61,8 +61,11 @@ export default function Home() {
     <div className='min-h-screen text-md'>
       <div className='w-full py-3 bg-indigo-500'>
         <h2 className='text-xl text-white font-semibold text-center'>
-          Upload your Home Work
+          GPT4-V Math Teacher
         </h2>
+        <h3 className='text-xl text-white text-center'>
+          Upload your Home Work
+        </h3>
       </div>
       <div className='max-w-7xl py-12 mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10'>
         <div className='lg:col-span-1'>
@@ -150,7 +153,7 @@ export default function Home() {
             </div>
           ) : openAIResponse !== "" ? (
             <div className=''>
-              <h2 className='text-xl font-bold mb-4'>AI Response</h2>
+              <h2 className='text-xl font-bold mb-4'>Here's the feedback:</h2>
               <Latex>{openAIResponse}</Latex>
             </div>
           ) : null}
