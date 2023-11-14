@@ -28,7 +28,7 @@ export async function POST(request: Request) {
         content: [
           {
             type: "text",
-            text: "Can you check if the solution is correct? Also answer should be in latex format.",
+            text: "Can you check if the solution is correct? In the first line of the answer, mention whether the answer is correct. Also answer should be in latex format. Don't mention the word latex in your answer.",
           },
           {
             type: "image_url",

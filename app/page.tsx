@@ -3,9 +3,11 @@
 import { ChangeEvent, useState, FormEvent } from "react";
 import toast from "react-hot-toast";
 import Latex from "react-latex-next";
+import BounceLoader from "react-spinners/BounceLoader";
 
 export default function Home() {
   const [image, setImage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
   const [openAIResponse, setOpenAIResponse] = useState<string>("");
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -38,6 +40,8 @@ export default function Home() {
       return;
     }
 
+    setIsLoading(true);
+
     // POST api/analyzeImage
     await fetch("api/analyzeImage", {
       method: "POST",
@@ -48,23 +52,9 @@ export default function Home() {
         image: image, // base64 image
       }),
     }).then(async (response: any) => {
-      // Because we are getting a streaming text response
-      // we have to make some logic to handle the streaming text
-      const reader = response.body?.getReader();
-      setOpenAIResponse("");
-      // reader allows us to read a new piece of info on each "read"
-      // "Hello" + "I am" + "Cooper Codes"  reader.read();
-      while (true) {
-        const { done, value } = await reader?.read();
-        // done is true once the response is done
-        if (done) {
-          break;
-        }
-
-        // value : uint8array -> a string.
-        var currentChunk = new TextDecoder().decode(value);
-        setOpenAIResponse((prev) => prev + currentChunk);
-      }
+      const data = await response.text();
+      setOpenAIResponse(data);
+      setIsLoading(false);
     });
   }
   return (
@@ -110,11 +100,11 @@ export default function Home() {
                     fill='none'
                     viewBox='0 0 24 24'
                     stroke='currentColor'
-                    stroke-width='2'
+                    strokeWidth='2'
                   >
                     <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
                       d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12'
                     />
                   </svg>
@@ -142,14 +132,30 @@ export default function Home() {
             </div>
           </form>
         </div>
-        <div className='lg:col-span-2'>
-          {openAIResponse !== "" ? (
+        {/* <div className='lg:col-span-2 flex justify-start items-center'>
+          {isLoading ? (
+            <BounceLoader color={"#123abc"} loading={isLoading} size={60} />
+          ) : openAIResponse !== "" ? (
+            <div className=''>
+              <h2 className='text-xl font-bold mb-4'>AI Response</h2>
+              <Latex>{openAIResponse}</Latex>
+            </div>
+          ) : null}
+        </div> */}
+        <div className='lg:col-span-2 flex justify-start items-center'>
+          {isLoading ? (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <BounceLoader color={"#123abc"} loading={isLoading} size={60} />
+              <p>Evaluating your answer...</p>
+            </div>
+          ) : openAIResponse !== "" ? (
             <div className=''>
               <h2 className='text-xl font-bold mb-4'>AI Response</h2>
               <Latex>{openAIResponse}</Latex>
             </div>
           ) : null}
         </div>
+
       </div>
     </div>
   );
