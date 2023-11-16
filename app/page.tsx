@@ -153,7 +153,7 @@ export default function Home() {
             </div>
           ) : openAIResponse !== "" ? (
             <div className=''>
-              <h2 className='text-xl font-bold mb-4'>Here's the feedback:</h2>
+              <h2 className='text-xl font-bold mb-4'>Here is your feedback:</h2>
               <Latex>{openAIResponse}</Latex>
             </div>
           ) : null}
