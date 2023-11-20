@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { ChangeEvent, useState, FormEvent } from "react";
 import toast from "react-hot-toast";
@@ -40,20 +40,6 @@ export default function Home() {
     };
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (!user) {
-      toast.error("Please login to check the answer!");
-      return;
-    }
-
-    if (image === "") {
-      toast.error("Upload an image.");
-      return;
-    }
-
-
   // async function handleSubmit(event: FormEvent<HTMLFormElement>) {
   //   event.preventDefault();
 
@@ -67,44 +53,58 @@ export default function Home() {
   //     return;
   //   }
 
-  //   // Check the number of times the user has used the button in the last 24 hours
-  //   const userButtonUsage = await prisma.userButtonUsage.findUnique({
-  //     where: {
-  //       userId: user.id,
-  //     },
-  //   });
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-  //   const now = new Date();
-  //   const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    if (!user) {
+      toast.error("Please login to check the answer!");
+      return;
+    }
 
-  //   if (userButtonUsage && userButtonUsage.lastUsed >= twentyFourHoursAgo) {
-  //     if (userButtonUsage.count >= 2) {
-  //       toast.error("You have used the button too many times today!");
-  //       return;
-  //     } else {
-  //       // If the user has not used the button 5 times in the last 24 hours, increment the count
-  //       await prisma.userButtonUsage.update({
-  //         where: {
-  //           userId: user.id,
-  //         },
-  //         data: {
-  //           count: {
-  //             increment: 1,
-  //           },
-  //           lastUsed: now,
-  //         },
-  //       });
-  //     }
-  //   } else {
-  //     // If the user has not used the button in the last 24 hours, create a new entry
-  //     await prisma.userButtonUsage.create({
-  //       data: {
-  //         userId: user.id,
-  //         count: 1,
-  //         lastUsed: now,
-  //       },
-  //     });
-  //   }
+    if (image === "") {
+      toast.error("Upload an image.");
+      return;
+    }
+
+    // Check the number of times the user has used the button in the last 24 hours
+    const userButtonUsage = await prisma.userButtonUsage.findUnique({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    if (userButtonUsage && userButtonUsage.lastUsed >= twentyFourHoursAgo) {
+      if (userButtonUsage.count >= 2) {
+        toast.error("You have used the button too many times today!");
+        return;
+      } else {
+        // If the user has not used the button 5 times in the last 24 hours, increment the count
+        await prisma.userButtonUsage.update({
+          where: {
+            userId: user.id,
+          },
+          data: {
+            count: {
+              increment: 1,
+            },
+            lastUsed: now,
+          },
+        });
+      }
+    } else {
+      // If the user has not used the button in the last 24 hours, create a new entry
+      await prisma.userButtonUsage.create({
+        data: {
+          userId: user.id,
+          count: 1,
+          lastUsed: now,
+        },
+      });
+    }
+
 
 
     setIsLoading(true);

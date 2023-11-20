@@ -19,7 +19,12 @@ export default function Nav() {
                     </a>
                 </div>
 
-                <SignInButton />
+                {/* <SignInButton /> */}
+
+                {
+                    isLoaded && !user && (
+                            <SignInButton />
+                )}
 
                 {
                     isLoaded && user && (
