@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^4.27.1",
+    "@supabase/supabase-js": "^2.38.4",
     "ai": "^2.2.21",
     "next": "14.0.1",
     "openai-edge": "^1.2.2",

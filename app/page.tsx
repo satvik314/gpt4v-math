@@ -4,11 +4,14 @@ import { ChangeEvent, useState, FormEvent } from "react";
 import toast from "react-hot-toast";
 import Latex from "react-latex-next";
 import BounceLoader from "react-spinners/BounceLoader";
+import Nav from './components/Nav';
+import {useUser} from '@clerk/nextjs';
 
 export default function Home() {
   const [image, setImage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [openAIResponse, setOpenAIResponse] = useState<string>("");
+  const { user } = useUser();
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files === null) {
@@ -35,6 +38,11 @@ export default function Home() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (!user) {
+      toast.error("Please login to check the answer!");
+      return;
+    }
+
     if (image === "") {
       toast.error("Upload an image.");
       return;
@@ -59,6 +67,7 @@ export default function Home() {
   }
   return (
     <div className='min-h-screen text-md'>
+      <Nav />
       <div className='w-full py-3 bg-indigo-500'>
         <h2 className='text-xl text-white font-semibold text-center'>
           AI Math Teacher
