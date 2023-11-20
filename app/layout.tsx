@@ -3,6 +3,11 @@ import { Poppins } from "next/font/google";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { ToasterProvider } from "./components/ToasterProvider";
+import SupabaseProvider from "@/providers/SupabaseProvider";
+import UserProvider from "@/providers/UserProvider";
+import Navbar from "./components/Navbar";
+
+
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -21,9 +26,13 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={poppins.className}>
-        <ToasterProvider />
-
-        {children}
+      <SupabaseProvider>
+          <UserProvider>
+            <Navbar />
+            {children}
+            <ToasterProvider />
+          </UserProvider>
+        </SupabaseProvider>
       </body>
     </html>
   );
