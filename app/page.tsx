@@ -1,5 +1,7 @@
 "use client";
 
+import { useUser } from "@/hooks/useUser";
+import { getApiCallLimit, incrementApiCallLimit } from "@/utils/apiLimits";
 import { ChangeEvent, useState, FormEvent } from "react";
 import toast from "react-hot-toast";
 import Latex from "react-latex-next";
@@ -9,6 +11,8 @@ export default function Home() {
   const [image, setImage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [openAIResponse, setOpenAIResponse] = useState<string>("");
+  const { user } = useUser();
+  console.log(user);
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.files === null) {
@@ -40,22 +44,31 @@ export default function Home() {
       return;
     }
 
-    setIsLoading(true);
-
-    // POST api/analyzeImage
-    await fetch("api/analyzeImage", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        image: image, // base64 image
-      }),
-    }).then(async (response: any) => {
-      const data = await response.text();
-      setOpenAIResponse(data);
-      setIsLoading(false);
-    });
+    const apiCallLimit = getApiCallLimit();
+    if (apiCallLimit >= 5 && !user) {
+      return toast.error("API LIMIT EXCEEDED! Please Login to Continue.");
+    }
+    if (apiCallLimit < 5) {
+      setIsLoading(true);
+      await fetch("api/analyzeImage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image: image, // base64 image
+        }),
+      })
+        .then(async (response: any) => {
+          const data = await response.text();
+          setOpenAIResponse(data);
+          incrementApiCallLimit();
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }
   return (
     <div className='min-h-screen text-md'>
@@ -147,7 +160,13 @@ export default function Home() {
         </div> */}
         <div className='lg:col-span-2 flex justify-start items-center'>
           {isLoading ? (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
               <BounceLoader color={"#123abc"} loading={isLoading} size={60} />
               <p>Evaluating your answer...</p>
             </div>
@@ -158,7 +177,6 @@ export default function Home() {
             </div>
           ) : null}
         </div>
-
       </div>
     </div>
   );
